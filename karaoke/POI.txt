@@ -1,6 +1,0 @@
-#DISC GOLF POIs
-Westmoreland Disc Golf Course, 44.0390864, -123.1149114
-Alton Baker Disc Golf Course, 44.0555835, -123.0800824
-Stewart Pond Disc Golf Course, 44.0504054, -123.1548617
-Cottage Grove Disc Golf Course, 43.8064148, -123.0489309
-Dexter Lake Disc Golf Course, 43.917969, -122.816268
