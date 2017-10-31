@@ -1,1 +1,6 @@
 #These are the long/lats of the POIs that I will display on my map
+Westmoreland Disc Golf Course,44.039086,-123.114911
+Alton Baker Disc Golf Course,44.055583,-123.080082
+Stewart Pond Disc Golf Course,44.050405,-123.154862
+Cottage Grove Disc Golf Park,43.806415,-123.048931
+Dexter Lake Recreation Area,43.917969,-122.816268
