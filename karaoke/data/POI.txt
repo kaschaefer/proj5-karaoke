@@ -1,0 +1,1 @@
+#These are the long/lats of the POIs that I will display on my map
