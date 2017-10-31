@@ -7,11 +7,6 @@ logging.basicConfig(format='%(levelname)s:%(message)s',
 log = logging.getLogger(__name__)
 
 def process(raw):
-   """
-   Add pertinent info here
-   """
-    field = None
-    entry = {}
     cooked = []
     for line in raw:
         log.debug("Line: {}".format(line))
@@ -19,21 +14,13 @@ def process(raw):
         if len(line) == 0 or line[0] == "#":
             log.debug("Skipping")
             continue
-        parts = line.split(':')
-        if len(parts) == 1 and field:
-            entry[field] = entry[field] + line + " "
-            continue
-        if len(parts) == 2:
-            field = parts[0]
-            content = parts[1]
+        elif len(line) != 0:
+            line = line.split(",")
+            print(line[0] + line[1] + line[2])
+            cooked.append((line[0], line[1], line[2]))
         else:
-            raise ValueError("Trouble with line: '{}'\n".format(line) +
-                             "Split into |{}|".format("|".join(parts)))
-
-	if entry:
-            cooked.append(entry)
-
-	return cooked
+            raise ValueError("Trouble with line: '{}'\n".format(line))
+    return cooked
 
 def main():
     f = open("data/POI.txt")
