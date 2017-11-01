@@ -38,20 +38,22 @@ src="https://maps.googleapis.com/maps/api/js?key={{g.mapkey}}">
 
 
 <script type="text/javascript">
+
+//Function that creates a reasonably sized disc golf icon
 var disc_icon = {
-    url: "https://d30y9cdsu7xlg0.cloudfront.net/png/30755-200.png", // url
-    scaledSize: new google.maps.Size(50, 50), // scaled size
-    origin: new google.maps.Point(0,0), // origin
-    anchor: new google.maps.Point(0, 0) // anchor
+    url: "https://d30y9cdsu7xlg0.cloudfront.net/png/30755-200.png",
+    scaledSize: new google.maps.Size(50, 50),
+    origin: new google.maps.Point(0,0),
+    anchor: new google.maps.Point(0, 0)
 };
 
-$(document).ready(function() { //When page is finished loading, initialize map
+//When page is finished loading, initialize map
+$(document).ready(function() { 
     initMap();
 });
 
 //This function places a marker at the given location on the given map
 //Also creates a content box which can is displayed when the user clicks on the marker
-
 function placeDiscMarker(location, map, description) {
     var marker = new google.maps.Marker({
         position: location,
@@ -68,14 +70,15 @@ function placeDiscMarker(location, map, description) {
             infowindow.open(map, marker);
     });
 }
-function placeMarker(location, map, description) {
+
+function placeMarker(location, map) {
     var marker = new google.maps.Marker({
         position: location,
         map: map
     });
     
     var infowindow = new google.maps.InfoWindow({
-            content: description,
+            content: "You are here",
             maxWidth: 400
     });
 
@@ -102,10 +105,14 @@ function initMap() {
   }
   var map = new google.maps.Map(mapCanvas, mapOptions);
 
-  //Add listener event for user click
-  map.addListener('click', function(e) {
-    placeMarkerAndPanTo(e.latLng, map);
-  });
+  //Show Where User Is
+  if (navigator.geolocation) {  //If geolocation is supported by browser/device
+    navigator.geolocation.getCurrentPosition(function(position){
+        current_pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        placeMarkerAndPanTo(current_pos, map);
+    });
+  }
+  
 
   //Add POI markers using Jinja2
   {% for item in g.POI_locations %}
@@ -115,8 +122,7 @@ function initMap() {
         var lat = latlng[0];
         var long = latlng[1];
         var location = new google.maps.LatLng(lat, long);
-        var disc_golf = true;
-        placeDiscMarker(location, map, name, disc_golf);
+        placeDiscMarker(location, map, name);
     {% endfor %}
   {% endfor %}
 }
