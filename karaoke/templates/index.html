@@ -3,8 +3,7 @@
 <title>Southern Willamette Valley Disc Golf Guide</title>
 <style>
     #map {
-     height: 400px;
-     width: 90%;
+     height: 100%;
     }
  </style>
 
@@ -33,25 +32,19 @@ src="https://maps.googleapis.com/maps/api/js?key={{g.mapkey}}">
 
         <div class="container">
 
-            <div class="row">
-
-                <div class="col-lg-8 col-lg-offset-2">
-
-                    <h1>Google maps & Bootstrap tutorial from <a href="http://bootstrapious.com">Bootstrapious.com</a></h1>
-
-                    <p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.</p>
-
-                    <p><strong>Pellentesque habitant morbi tristique</strong> senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. <em>Aenean ultricies mi vitae est.</em> Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, <code>commodo vitae</code>, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. <a href="#">Donec non enim</a> in turpis pulvinar facilisis. Ut felis.</p>
-                    
-                </div>
-
-            </div> 
+            <div id="map"></div>
 
         </div> 
 
-<div id="map"></div>
 
 <script type="text/javascript">
+var disc_icon = {
+    url: "https://d30y9cdsu7xlg0.cloudfront.net/png/30755-200.png", // url
+    scaledSize: new google.maps.Size(50, 50), // scaled size
+    origin: new google.maps.Point(0,0), // origin
+    anchor: new google.maps.Point(0, 0) // anchor
+};
+
 $(document).ready(function() { //When page is finished loading, initialize map
     initMap();
 });
@@ -59,26 +52,41 @@ $(document).ready(function() { //When page is finished loading, initialize map
 //This function places a marker at the given location on the given map
 //Also creates a content box which can is displayed when the user clicks on the marker
 
-function placeMarker(location, map) {
+function placeDiscMarker(location, map, description) {
+    var marker = new google.maps.Marker({
+        position: location,
+        map: map,
+        icon: disc_icon
+    });
+    
+    var infowindow = new google.maps.InfoWindow({
+            content: description,
+            maxWidth: 400
+    });
+
+    marker.addListener('click', function () {
+            infowindow.open(map, marker);
+    });
+}
+function placeMarker(location, map, description) {
     var marker = new google.maps.Marker({
         position: location,
         map: map
     });
-    var contentString = '<div class="info-window">' +
-                '<h3>This is where you are.</h3>' +
-                '<div class="info-content">' +
-                '<p>Here is some information about this marker.</p>' +
-                '</div>' +
-                '</div>';
-
-        var infowindow = new google.maps.InfoWindow({
-            content: contentString,
+    
+    var infowindow = new google.maps.InfoWindow({
+            content: description,
             maxWidth: 400
-        });
+    });
 
-        marker.addListener('click', function () {
+    marker.addListener('click', function () {
             infowindow.open(map, marker);
-        });
+    });
+}
+
+function placeMarkerAndPanTo(latLng, map) {
+    placeMarker(latLng, map);
+    map.panTo(latLng);
 }
 
 //Initializes the map and places a marker at each of the POIs
@@ -88,19 +96,29 @@ function initMap() {
   var mapCanvas = document.getElementById('map');
   var mapOptions = {
     center: location,
-    zoom: 16,
+    zoom: 14,
     panControl: false,
     mapTypeId: google.maps.MapTypeId.ROADMAP
   }
   var map = new google.maps.Map(mapCanvas, mapOptions);
-  placeMarker(location, map);
-  //Add POI markers
-  //for loop? Here is where I need to make the 
-  //AJAX call to the server to ask for POI information
 
-  /*for (i=0; i < POIS.length; i++) {
-    placeMarker(location, map);
-  }*/
+  //Add listener event for user click
+  map.addListener('click', function(e) {
+    placeMarkerAndPanTo(e.latLng, map);
+  });
+
+  //Add POI markers using Jinja2
+  {% for item in g.POI_locations %}
+    {% for k, v1 in item.items() %}
+        var name = {{ k|tojson }}
+        var latlng = {{ v1|tojson }}
+        var lat = latlng[0];
+        var long = latlng[1];
+        var location = new google.maps.LatLng(lat, long);
+        var disc_golf = true;
+        placeDiscMarker(location, map, name, disc_golf);
+    {% endfor %}
+  {% endfor %}
 }
 		
 		

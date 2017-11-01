@@ -9,15 +9,16 @@ log = logging.getLogger(__name__)
 def process(raw):
     cooked = []
     for line in raw:
+        x = {}
         log.debug("Line: {}".format(line))
         line = line.strip()
         if len(line) == 0 or line[0] == "#":
             log.debug("Skipping")
             continue
         elif len(line) != 0:
-            line = line.split(",")
-            print(line[0] + line[1] + line[2])
-            cooked.append((line[0], line[1], line[2]))
+            parts = line.split(",")
+            x[parts[0]] = [parts[1], parts[2]]
+            cooked.append(x)            
         else:
             raise ValueError("Trouble with line: '{}'\n".format(line))
     return cooked
